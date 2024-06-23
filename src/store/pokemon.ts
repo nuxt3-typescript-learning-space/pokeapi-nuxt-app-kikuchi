@@ -1,4 +1,4 @@
-// stores/pokemon.ts
+// store/pokemon.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -8,6 +8,7 @@ import { ref } from 'vue';
 export interface Pokemon {
   name: string;
   url: string;
+  imageUrl?: string; // 画像URLを追加
 }
 
 /**
@@ -26,7 +27,21 @@ export const usePokemonStore = defineStore('pokemon', () => {
     try {
       const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
       const data = await response.json();
-      pokemon.value = data.results; // 取得したポケモンデータをストアに保存
+      const results = data.results;
+
+      // 各ポケモンの詳細データを取得
+      const detailedPokemon = await Promise.all(
+        results.map(async (pokemon: Pokemon) => {
+          const res = await fetch(pokemon.url);
+          const details = await res.json();
+          return {
+            ...pokemon,
+            imageUrl: details.sprites.front_default, // 画像URLを追加
+          };
+        }),
+      );
+
+      pokemon.value = detailedPokemon; // 取得したポケモンデータをストアに保存
     } catch (err) {
       error.value = err instanceof Error ? err : new Error(String(err)); // エラーが発生した場合はエラー情報を保存
     } finally {

@@ -21,10 +21,30 @@ definePageMeta({
     <h1>Pokémon List</h1>
     <div v-if="loading">Loading...</div>
     <div v-if="error">Error: {{ error.message }}</div>
-    <ul v-if="!loading && !error">
-      <li v-for="pokemon in pokemonList" :key="pokemon.name">
-        {{ pokemon.name }}
+    <ul v-if="!loading && !error" class="pokemon-list">
+      <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item">
+        <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
+        <span>{{ pokemon.name }}</span>
       </li>
     </ul>
   </div>
 </template>
+
+<style scoped>
+.pokemon-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+}
+
+.pokemon-item {
+  margin: 10px;
+  text-align: center;
+}
+
+.pokemon-image {
+  width: 96px;
+  height: 96px;
+}
+</style>
