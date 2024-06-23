@@ -24,7 +24,7 @@ definePageMeta({
     <ul v-if="!loading && !error" class="pokemon-list">
       <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item">
         <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
-        <span>{{ pokemon.name }}</span>
+        <span>{{ pokemon.japaneseName }}</span>
       </li>
     </ul>
   </div>

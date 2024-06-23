@@ -1,4 +1,3 @@
-// store/pokemon.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -9,6 +8,7 @@ export interface Pokemon {
   name: string;
   url: string;
   imageUrl?: string; // 画像URLを追加
+  japaneseName?: string; // 日本語名を追加
 }
 
 /**
@@ -20,6 +20,21 @@ export const usePokemonStore = defineStore('pokemon', () => {
   const error = ref<Error | null>(null);
 
   /**
+   * ポケモンの日本語名を取得する関数
+   */
+  const fetchJapaneseName = async (englishName: string): Promise<string> => {
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${englishName}`);
+      const data = await response.json();
+      const japaneseEntry = data.names.find((name: { language: { name: string } }) => name.language.name === 'ja');
+      return japaneseEntry ? japaneseEntry.name : englishName; // 日本語名が見つからない場合は英語名を返す
+    } catch (err) {
+      console.error(`Error fetching Japanese name for ${englishName}:`, err);
+      return englishName;
+    }
+  };
+
+  /**
    * PokeAPIからポケモンのデータを取得する非同期関数
    */
   const fetchPokemon = async () => {
@@ -29,14 +44,16 @@ export const usePokemonStore = defineStore('pokemon', () => {
       const data = await response.json();
       const results = data.results;
 
-      // 各ポケモンの詳細データを取得
+      // 各ポケモンの詳細データと日本語名を取得
       const detailedPokemon = await Promise.all(
         results.map(async (pokemon: Pokemon) => {
           const res = await fetch(pokemon.url);
           const details = await res.json();
+          const japaneseName = await fetchJapaneseName(pokemon.name);
           return {
             ...pokemon,
             imageUrl: details.sprites.front_default, // 画像URLを追加
+            japaneseName: japaneseName, // 日本語名を追加
           };
         }),
       );
