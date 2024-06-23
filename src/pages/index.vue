@@ -1,17 +1,30 @@
 <script setup lang="ts">
-import CounterDisplay from '@/components/CounterDisplay.vue';
-import Title from '@/components/Title.vue';
-import Button from '@/components/ui/button/Button.vue';
-import { useCounterStore } from '@/store/counterStore';
-const counterStore = useCounterStore();
-const { count: countState } = storeToRefs(counterStore);
-const { increment, decrement } = counterStore;
+import { usePokemonStore } from '@/store/pokemon';
+import type { Pokemon } from '@/store/pokemon';
+
+// ポケモンストアを使用する
+const pokemonStore = usePokemonStore();
+const {
+  pokemon: pokemonList,
+  loading,
+  error,
+} = pokemonStore as { pokemon: Pokemon[]; loading: boolean; error: Error | null };
+
+// ページメタ情報にミドルウェアを定義
+definePageMeta({
+  middleware: 'fetch-pokemon',
+});
 </script>
+
 <template>
-  <section>
-    <Title />
-    <Button @click="increment">Increment</Button>
-    <Button @click="decrement">Decrement</Button>
-    <CounterDisplay :count="countState" />
-  </section>
+  <div>
+    <h1>Pokémon List</h1>
+    <div v-if="loading">Loading...</div>
+    <div v-if="error">Error: {{ error.message }}</div>
+    <ul v-if="!loading && !error">
+      <li v-for="pokemon in pokemonList" :key="pokemon.name">
+        {{ pokemon.name }}
+      </li>
+    </ul>
+  </div>
 </template>
