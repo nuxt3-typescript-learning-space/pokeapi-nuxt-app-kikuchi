@@ -9,6 +9,7 @@ export interface Pokemon {
   url: string;
   imageUrl?: string; // 画像URLを追加
   japaneseName?: string; // 日本語名を追加
+  types?: string[]; // タイプ情報を追加
 }
 
 /**
@@ -50,10 +51,12 @@ export const usePokemonStore = defineStore('pokemon', () => {
           const res = await fetch(pokemon.url);
           const details = await res.json();
           const japaneseName = await fetchJapaneseName(pokemon.name);
+          const types = details.types.map((typeInfo: { type: { name: string } }) => typeInfo.type.name); // タイプ情報を取得
           return {
             ...pokemon,
             imageUrl: details.sprites.front_default, // 画像URLを追加
             japaneseName: japaneseName, // 日本語名を追加
+            types: types, // タイプ情報を追加
           };
         }),
       );
