@@ -15,33 +15,9 @@ definePageMeta({
   middleware: 'fetch-pokemon',
 });
 
-// 共通部分のパスを変数に格納
-const basePath = '../assets/images/icon/types/';
-
-// タイプ画像のパスを定義
-const typeImagePaths: { [key: string]: string } = {
-  bug: `${basePath}bug.png`,
-  dark: `${basePath}dark.png`,
-  dragon: `${basePath}dragon.png`,
-  electric: `${basePath}electric.png`,
-  fairy: `${basePath}fairy.png`,
-  fighting: `${basePath}fighting.png`,
-  fire: `${basePath}fire.png`,
-  flying: `${basePath}flying.png`,
-  ghost: `${basePath}ghost.png`,
-  grass: `${basePath}grass.png`,
-  ground: `${basePath}ground.png`,
-  ice: `${basePath}ice.png`,
-  normal: `${basePath}normal.png`,
-  poison: `${basePath}poison.png`,
-  psychic: `${basePath}psychic.png`,
-  rock: `${basePath}rock.png`,
-  steel: `${basePath}steel.png`,
-  water: `${basePath}water.png`,
-};
-
-const convertImgSrc = (src: string): string => {
-  return new URL(src, import.meta.url).href;
+// ポケモンの名前をコンソールに出力する関数
+const logPokemonName = (name: string) => {
+  console.log(name);
 };
 </script>
 
@@ -51,13 +27,18 @@ const convertImgSrc = (src: string): string => {
     <div v-if="loading">Loading...</div>
     <div v-if="error">Error: {{ error.message }}</div>
     <ul v-if="!loading && !error" class="pokemon-list">
-      <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item">
+      <li
+        v-for="pokemon in pokemonList"
+        :key="pokemon.name"
+        class="pokemon-item"
+        @click="pokemon.name && logPokemonName(pokemon.name)"
+      >
         <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
         <div>
           <span>{{ pokemon.japaneseName }}</span>
           <ul class="pokemon-types">
             <li v-for="type in pokemon.types" :key="type" class="pokemon-type">
-              <img :src="convertImgSrc(typeImagePaths[type])" :alt="type" class="type-image" />
+              <div :class="type" class="type-image" />
             </li>
           </ul>
         </div>
@@ -66,12 +47,14 @@ const convertImgSrc = (src: string): string => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .pokemon-list {
   display: flex;
   flex-wrap: wrap;
   list-style: none;
   padding: 0;
+  margin: auto;
+  width: 900px;
 }
 
 .pokemon-item {
@@ -100,8 +83,19 @@ const convertImgSrc = (src: string): string => {
   margin-right: 5px;
 }
 
+$types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying', 'ghost', 'grass', 'ground', 'ice',
+  'normal', 'poison', 'psychic', 'rock', 'steel', 'water';
+
 .type-image {
   width: 24px;
   height: 24px;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  @each $type in $types {
+    &.#{$type} {
+      background-image: url('@/assets/images/icon/types/#{$type}.png');
+    }
+  }
 }
 </style>
