@@ -10,6 +10,7 @@ export interface Pokemon {
   imageUrl?: string; // 画像URLを追加
   japaneseName?: string; // 日本語名を追加
   types?: string[]; // タイプ情報を追加
+  cryUrl?: string; // 鳴き声URLを追加
 }
 
 /**
@@ -45,18 +46,20 @@ export const usePokemonStore = defineStore('pokemon', () => {
       const data = await response.json();
       const results = data.results;
 
-      // 各ポケモンの詳細データと日本語名を取得
+      // 各ポケモンの詳細データと日本語名、鳴き声URLを取得
       const detailedPokemon = await Promise.all(
         results.map(async (pokemon: Pokemon) => {
           const res = await fetch(pokemon.url);
           const details = await res.json();
           const japaneseName = await fetchJapaneseName(pokemon.name);
           const types = details.types.map((typeInfo: { type: { name: string } }) => typeInfo.type.name); // タイプ情報を取得
+          const cryUrl = details.cries ? details.cries.latest : ''; // 鳴き声URLを取得
           return {
             ...pokemon,
             imageUrl: details.sprites.front_default, // 画像URLを追加
             japaneseName: japaneseName, // 日本語名を追加
             types: types, // タイプ情報を追加
+            cryUrl: cryUrl, // 鳴き声URLを追加
           };
         }),
       );

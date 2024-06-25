@@ -19,6 +19,12 @@ definePageMeta({
 const logPokemonName = (name: string) => {
   console.log(name);
 };
+
+// ポケモンの鳴き声を再生する関数
+const playCry = (url: string) => {
+  const audio = new Audio(url);
+  audio.play();
+};
 </script>
 
 <template>
@@ -41,6 +47,9 @@ const logPokemonName = (name: string) => {
               <div :class="type" class="type-image" />
             </li>
           </ul>
+          <div class="pokemon-cry">
+            <button @click.stop="pokemon.cryUrl && playCry(pokemon.cryUrl)">鳴き声を再生</button>
+          </div>
         </div>
       </li>
     </ul>
@@ -97,5 +106,9 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
       background-image: url('@/assets/images/icon/types/#{$type}.png');
     }
   }
+}
+
+.pokemon-cry {
+  margin-top: 5px;
 }
 </style>
