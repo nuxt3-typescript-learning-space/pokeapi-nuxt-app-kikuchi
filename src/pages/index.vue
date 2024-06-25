@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/Modal.vue';
 import { usePokemonStore } from '@/store/pokemon';
 import type { Pokemon } from '@/store/pokemon';
 
@@ -15,10 +16,12 @@ definePageMeta({
   middleware: 'fetch-pokemon',
 });
 
+const showModal = ref(false);
+
 // ポケモンの名前をコンソールに出力する関数
-const logPokemonName = (name: string) => {
-  console.log(name);
-};
+// const logPokemonName = (name: string) => {
+//   console.log(name);
+// };
 
 // ポケモンの鳴き声を再生する関数
 const playCry = (url: string) => {
@@ -33,12 +36,7 @@ const playCry = (url: string) => {
     <div v-if="loading">Loading...</div>
     <div v-if="error">Error: {{ error.message }}</div>
     <ul v-if="!loading && !error" class="pokemon-list">
-      <li
-        v-for="pokemon in pokemonList"
-        :key="pokemon.name"
-        class="pokemon-item"
-        @click="pokemon.name && logPokemonName(pokemon.name)"
-      >
+      <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item" @click="showModal = true">
         <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
         <div>
           <span>{{ pokemon.japaneseName }}</span>
@@ -53,6 +51,9 @@ const playCry = (url: string) => {
         </div>
       </li>
     </ul>
+    <Modal :show="showModal" @update:show="showModal = $event">
+      <p>Modal</p>
+    </Modal>
   </div>
 </template>
 
