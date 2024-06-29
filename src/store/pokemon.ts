@@ -7,34 +7,58 @@ import { ref } from 'vue';
 export interface Pokemon {
   name: string;
   url: string;
-  imageUrl?: string; // 画像URLを追加
-  japaneseName?: string; // 日本語名を追加
-  types?: string[]; // タイプ情報を追加
-  cryUrl?: string; // 鳴き声URLを追加
+  imageUrl?: string; // 画像URL
+  japaneseName?: string; // 日本語名
+  types?: string[]; // タイプ情報
+  cryUrl?: string; // 鳴き声URL
 }
 
 /**
- * ポケモンのデータを管理するストア
+ * PokeAPIからポケモンの日本語名を取得するヘルパー関数
+ * @param englishName - 英語名
+ * @returns 日本語名
+ */
+const fetchJapaneseName = async (englishName: string): Promise<string> => {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${englishName}`);
+    const data = await response.json();
+    const japaneseEntry = data.names.find((name: { language: { name: string } }) => name.language.name === 'ja');
+    return japaneseEntry ? japaneseEntry.name : englishName; // 日本語名が見つからない場合は英語名を返す
+  } catch (err) {
+    console.error(`Error fetching Japanese name for ${englishName}:`, err);
+    return englishName; // エラー時は英語名を返す
+  }
+};
+
+/**
+ * PokeAPIからポケモンの詳細データを取得するヘルパー関数
+ * @param url - ポケモンの詳細データURL
+ * @param name - ポケモンの英語名
+ * @returns ポケモンの詳細データ
+ */
+const fetchPokemonDetails = async (url: string, name: string): Promise<Pokemon> => {
+  const res = await fetch(url);
+  const details = await res.json();
+  const japaneseName = await fetchJapaneseName(name);
+  const types = details.types.map((typeInfo: { type: { name: string } }) => typeInfo.type.name);
+  const cryUrl = details.cries ? details.cries.latest : '';
+  return {
+    name,
+    url,
+    imageUrl: details.sprites.front_default,
+    japaneseName,
+    types,
+    cryUrl,
+  };
+};
+
+/**
+ * ポケモンのデータを管理するPiniaストア
  */
 export const usePokemonStore = defineStore('pokemon', () => {
-  const pokemon = ref<Pokemon[]>([]);
-  const loading = ref(false);
-  const error = ref<Error | null>(null);
-
-  /**
-   * ポケモンの日本語名を取得する関数
-   */
-  const fetchJapaneseName = async (englishName: string): Promise<string> => {
-    try {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${englishName}`);
-      const data = await response.json();
-      const japaneseEntry = data.names.find((name: { language: { name: string } }) => name.language.name === 'ja');
-      return japaneseEntry ? japaneseEntry.name : englishName; // 日本語名が見つからない場合は英語名を返す
-    } catch (err) {
-      console.error(`Error fetching Japanese name for ${englishName}:`, err);
-      return englishName;
-    }
-  };
+  const pokemon = ref<Pokemon[]>([]); // ポケモンのデータを保持するリアクティブ変数
+  const loading = ref(false); // データ取得中の状態を保持するリアクティブ変数
+  const error = ref<Error | null>(null); // エラー情報を保持するリアクティブ変数
 
   /**
    * PokeAPIからポケモンのデータを取得する非同期関数
@@ -46,22 +70,9 @@ export const usePokemonStore = defineStore('pokemon', () => {
       const data = await response.json();
       const results = data.results;
 
-      // 各ポケモンの詳細データと日本語名、鳴き声URLを取得
+      // 各ポケモンの詳細データを取得し、まとめて保存
       const detailedPokemon = await Promise.all(
-        results.map(async (pokemon: Pokemon) => {
-          const res = await fetch(pokemon.url);
-          const details = await res.json();
-          const japaneseName = await fetchJapaneseName(pokemon.name);
-          const types = details.types.map((typeInfo: { type: { name: string } }) => typeInfo.type.name); // タイプ情報を取得
-          const cryUrl = details.cries ? details.cries.latest : ''; // 鳴き声URLを取得
-          return {
-            ...pokemon,
-            imageUrl: details.sprites.front_default, // 画像URLを追加
-            japaneseName: japaneseName, // 日本語名を追加
-            types: types, // タイプ情報を追加
-            cryUrl: cryUrl, // 鳴き声URLを追加
-          };
-        }),
+        results.map((pokemon: Pokemon) => fetchPokemonDetails(pokemon.url, pokemon.name)),
       );
 
       pokemon.value = detailedPokemon; // 取得したポケモンデータをストアに保存
@@ -72,5 +83,5 @@ export const usePokemonStore = defineStore('pokemon', () => {
     }
   };
 
-  return { pokemon, loading, error, fetchPokemon };
+  return { pokemon, loading, error, fetchPokemon }; // ストアの状態とメソッドを返す
 });
