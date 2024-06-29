@@ -45,7 +45,7 @@ watch(
 
 .modal-content {
   background: white;
-  padding: 20px;
+  padding: 40px;
   border-radius: 5px;
   position: relative;
   width: 400px;

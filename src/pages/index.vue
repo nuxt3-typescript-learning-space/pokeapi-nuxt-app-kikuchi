@@ -17,11 +17,18 @@ definePageMeta({
 });
 
 const showModal = ref(false);
+const pokemonDetail = {
+  name: '',
+  japaneseName: '',
+  imageUrl: '',
+};
 
 // ポケモンの名前をコンソールに出力する関数
-// const logPokemonName = (name: string) => {
-//   console.log(name);
-// };
+const updatePokemonDetail = (name: string, japaneseName: string, imageUrl: string) => {
+  pokemonDetail.name = name;
+  pokemonDetail.japaneseName = japaneseName;
+  pokemonDetail.imageUrl = imageUrl;
+};
 
 // ポケモンの鳴き声を再生する関数
 const playCry = (url: string) => {
@@ -36,7 +43,18 @@ const playCry = (url: string) => {
     <div v-if="loading">Loading...</div>
     <div v-if="error">Error: {{ error.message }}</div>
     <ul v-if="!loading && !error" class="pokemon-list">
-      <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item" @click="showModal = true">
+      <li
+        v-for="pokemon in pokemonList"
+        :key="pokemon.name"
+        class="pokemon-item"
+        @click="
+          (showModal = true),
+            pokemon.name &&
+              pokemon.japaneseName &&
+              pokemon.imageUrl &&
+              updatePokemonDetail(pokemon.name, pokemon.japaneseName, pokemon.imageUrl)
+        "
+      >
         <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
         <div>
           <span>{{ pokemon.japaneseName }}</span>
@@ -52,7 +70,10 @@ const playCry = (url: string) => {
       </li>
     </ul>
     <Modal :show="showModal" @update:show="showModal = $event">
-      <p>Modal</p>
+      <p class="modal-pokemon-name">{{ pokemonDetail.japaneseName }}</p>
+      <div class="modal-pokemon-image">
+        <img class="modal-pokemon-image__item" :src="pokemonDetail.imageUrl" :alt="pokemonDetail.japaneseName" />
+      </div>
     </Modal>
   </div>
 </template>
@@ -111,5 +132,22 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
 
 .pokemon-cry {
   margin-top: 5px;
+}
+
+.modal-pokemon-name {
+  font-size: 20px;
+  text-align: center;
+}
+
+.modal-pokemon-image {
+  width: 300px;
+  margin: 10px auto 0;
+  border: 1px solid #000;
+  border-radius: 20px;
+  &__item {
+    width: 180px;
+    height: 180px;
+    margin: auto;
+  }
 }
 </style>
