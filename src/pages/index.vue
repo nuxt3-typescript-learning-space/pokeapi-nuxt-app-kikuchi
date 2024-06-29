@@ -69,7 +69,12 @@ const playCry = (url: string) => {
         <img class="modal-pokemon-image__item" :src="pokemonDetail?.imageUrl" :alt="pokemonDetail?.japaneseName" />
       </div>
       <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
-      <!-- 説明文を追加 -->
+      <ul class="pokemon-stats">
+        <li v-for="stat in pokemonDetail?.stats" :key="stat.name">
+          <span>{{ stat.name }}: {{ stat.base_stat }}</span>
+        </li>
+      </ul>
+      <!-- 種族値を表示 -->
     </Modal>
   </div>
 </template>
@@ -151,5 +156,19 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
   text-align: left;
   margin-top: 10px;
   padding: 10px;
+}
+
+.pokemon-stats {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  margin: 10px auto 0;
+  width: 240px;
+  display: flex;
+  flex-wrap: wrap;
+
+  li {
+    width: 120px;
+  }
 }
 </style>

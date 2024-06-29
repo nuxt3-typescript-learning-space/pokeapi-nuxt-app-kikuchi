@@ -12,6 +12,25 @@ export interface Pokemon {
   types?: string[]; // タイプ情報
   cryUrl?: string; // 鳴き声URL
   description?: string; // 説明文
+  stats?: Stat[]; // 種族値
+}
+
+/**
+ * 種族値のデータの型定義
+ */
+export interface Stat {
+  name: string;
+  base_stat: number;
+}
+
+/**
+ * PokeAPIから取得する種族値の型定義
+ */
+interface ApiStat {
+  base_stat: number;
+  stat: {
+    name: string;
+  };
 }
 
 /**
@@ -51,6 +70,27 @@ const fetchJapaneseDescription = async (englishName: string): Promise<string> =>
 };
 
 /**
+ * PokeAPIからポケモンの種族値を取得するヘルパー関数
+ * @param stats - 種族値の配列
+ * @returns 種族値のデータ
+ */
+const fetchStats = (stats: ApiStat[]): Stat[] => {
+  const statNames: { [key: string]: string } = {
+    hp: 'HP',
+    attack: 'こうげき',
+    defense: 'ぼうぎょ',
+    'special-attack': 'とくこう',
+    'special-defense': 'とくぼう',
+    speed: 'すばやさ',
+  };
+
+  return stats.map((stat) => ({
+    name: statNames[stat.stat.name],
+    base_stat: stat.base_stat,
+  }));
+};
+
+/**
  * PokeAPIからポケモンの詳細データを取得するヘルパー関数
  * @param url - ポケモンの詳細データURL
  * @param name - ポケモンの英語名
@@ -61,6 +101,7 @@ const fetchPokemonDetails = async (url: string, name: string): Promise<Pokemon> 
   const details = await res.json();
   const japaneseName = await fetchJapaneseName(name);
   const description = await fetchJapaneseDescription(name);
+  const stats = fetchStats(details.stats);
   const types = details.types.map((typeInfo: { type: { name: string } }) => typeInfo.type.name);
   const cryUrl = details.cries ? details.cries.latest : '';
   return {
@@ -71,6 +112,7 @@ const fetchPokemonDetails = async (url: string, name: string): Promise<Pokemon> 
     types,
     cryUrl,
     description,
+    stats,
   };
 };
 
