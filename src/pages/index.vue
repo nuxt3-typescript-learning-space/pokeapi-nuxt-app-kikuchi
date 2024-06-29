@@ -68,6 +68,8 @@ const playCry = (url: string) => {
       <div class="modal-pokemon-image">
         <img class="modal-pokemon-image__item" :src="pokemonDetail?.imageUrl" :alt="pokemonDetail?.japaneseName" />
       </div>
+      <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
+      <!-- 説明文を追加 -->
     </Modal>
   </div>
 </template>
@@ -143,5 +145,11 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
     height: 180px;
     margin: auto;
   }
+}
+
+.modal-pokemon-description {
+  text-align: left;
+  margin-top: 10px;
+  padding: 10px;
 }
 </style>
