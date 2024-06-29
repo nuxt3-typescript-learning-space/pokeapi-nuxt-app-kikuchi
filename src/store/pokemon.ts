@@ -8,6 +8,7 @@ export interface Pokemon {
   name: string;
   url: string;
   imageUrl?: string; // 画像URL
+  officialArtworkUrl?: string; // オフィシャルイラストURL
   japaneseName?: string; // 日本語名
   types?: string[]; // タイプ情報
   cryUrl?: string; // 鳴き声URL
@@ -108,6 +109,7 @@ const fetchPokemonDetails = async (url: string, name: string): Promise<Pokemon> 
     name,
     url,
     imageUrl: details.sprites.front_default,
+    officialArtworkUrl: details.sprites.other['official-artwork'].front_default,
     japaneseName,
     types,
     cryUrl,

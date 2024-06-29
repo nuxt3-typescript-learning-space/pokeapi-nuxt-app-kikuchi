@@ -63,7 +63,11 @@ const playCry = (url: string) => {
       <div class="modal-content">
         <p class="modal-pokemon-name">{{ pokemonDetail?.japaneseName }}</p>
         <div class="modal-pokemon-image">
-          <img class="modal-pokemon-image__item" :src="pokemonDetail?.imageUrl" :alt="pokemonDetail?.japaneseName" />
+          <img
+            class="modal-pokemon-image__item"
+            :src="pokemonDetail?.officialArtworkUrl"
+            :alt="pokemonDetail?.japaneseName"
+          />
         </div>
         <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
         <ul class="pokemon-stats">
