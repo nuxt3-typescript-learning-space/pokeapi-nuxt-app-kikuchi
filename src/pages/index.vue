@@ -55,26 +55,26 @@ const playCry = (url: string) => {
               <div :class="type" class="type-image" />
             </li>
           </ul>
-          <!-- 鳴き声再生ボタン -->
-          <div class="pokemon-cry">
-            <button @click.stop="pokemon.cryUrl && playCry(pokemon.cryUrl)">鳴き声を再生</button>
-          </div>
         </div>
       </li>
     </ul>
     <!-- モーダル表示 -->
     <Modal :show="showModal" @update:show="showModal = $event">
-      <p class="modal-pokemon-name">{{ pokemonDetail?.japaneseName }}</p>
-      <div class="modal-pokemon-image">
-        <img class="modal-pokemon-image__item" :src="pokemonDetail?.imageUrl" :alt="pokemonDetail?.japaneseName" />
+      <div class="modal-content">
+        <p class="modal-pokemon-name">{{ pokemonDetail?.japaneseName }}</p>
+        <div class="modal-pokemon-image">
+          <img class="modal-pokemon-image__item" :src="pokemonDetail?.imageUrl" :alt="pokemonDetail?.japaneseName" />
+        </div>
+        <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
+        <ul class="pokemon-stats">
+          <li v-for="stat in pokemonDetail?.stats" :key="stat.name">
+            <span>{{ stat.name }}: {{ stat.base_stat }}</span>
+          </li>
+        </ul>
+        <div class="pokemon-cry">
+          <button @click="pokemonDetail?.cryUrl && playCry(pokemonDetail.cryUrl)">鳴き声を再生</button>
+        </div>
       </div>
-      <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
-      <ul class="pokemon-stats">
-        <li v-for="stat in pokemonDetail?.stats" :key="stat.name">
-          <span>{{ stat.name }}: {{ stat.base_stat }}</span>
-        </li>
-      </ul>
-      <!-- 種族値を表示 -->
     </Modal>
   </div>
 </template>
@@ -86,21 +86,50 @@ const playCry = (url: string) => {
   list-style: none;
   padding: 0;
   margin: auto;
-  width: 900px;
+  width: 1200px;
 }
 
 .pokemon-item {
   margin: 10px;
   padding: 10px;
   text-align: center;
-  border: 1px solid #222;
-  border-radius: 10px;
+  border: 2px solid #222;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 100%;
+    padding-top: 100%;
+    display: block;
+    border-radius: 50%;
+    background-image: url('@/assets/images/monsterball.png');
+    background-size: cover;
+    opacity: 0.3;
+  }
+
+  &:hover {
+    &::after {
+      opacity: 0;
+    }
+  }
 }
 
 .pokemon-image {
   width: 96px;
   height: 96px;
+  border-radius: 50%;
 }
 
 .pokemon-types {
@@ -131,13 +160,20 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
   }
 }
 
+.modal-content {
+  padding: 20px;
+}
+
 .pokemon-cry {
-  margin-top: 5px;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .modal-pokemon-name {
-  font-size: 20px;
+  font-size: 24px;
   text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .modal-pokemon-image {
@@ -156,6 +192,8 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
   text-align: left;
   margin-top: 10px;
   padding: 10px;
+  background: #f5f5f5;
+  border-radius: 8px;
 }
 
 .pokemon-stats {
@@ -163,9 +201,10 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
   padding: 0;
   text-align: left;
   margin: 10px auto 0;
-  width: 240px;
+  width: 340px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
 
   li {
     width: 120px;

@@ -48,8 +48,8 @@ watch(
   padding: 40px;
   border-radius: 5px;
   position: relative;
-  width: 400px;
-  height: 500px;
+  width: 500px;
+  height: 600px;
 }
 
 .modal-close {
