@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Modal from '@/components/Modal.vue';
 import { usePokemonStore } from '@/store/pokemon';
 import type { Pokemon } from '@/store/pokemon';
@@ -15,14 +16,27 @@ const {
 definePageMeta({ middleware: 'fetch-pokemon' });
 
 const showModal = ref(false); // モーダル表示状態を管理するリアクティブ変数
+const showBreakAnimation = ref(false); // ボールが割れるアニメーションを表示するリアクティブ変数
+const animationPosition = ref<{ top: number; left: number }>({ top: 0, left: 0 }); // アニメーションの位置を保持するリアクティブ変数
 const pokemonDetail = ref<Pokemon | null>(null); // 詳細情報を表示するポケモンのデータを保持するリアクティブ変数
 
 /**
  * ポケモンの詳細情報を更新する関数
  * @param pokemon - ポケモンの詳細データ
+ * @param event - クリックイベント
  */
-const updatePokemonDetail = (pokemon: Pokemon) => {
+const updatePokemonDetail = async (pokemon: Pokemon, event: MouseEvent) => {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const MAGIC_NUBER = 50;
+  animationPosition.value = {
+    top: rect.top - MAGIC_NUBER + window.scrollY,
+    left: rect.left - MAGIC_NUBER + window.scrollX,
+  };
+  console.log(animationPosition.value);
+  showBreakAnimation.value = true; // ボールが割れるアニメーションを表示
+  await new Promise((resolve) => setTimeout(resolve, 500)); // 0.5秒待つ
   pokemonDetail.value = pokemon; // ポケモンの詳細データを更新
+  showBreakAnimation.value = false; // ボールが割れるアニメーションを非表示
   showModal.value = true; // モーダルを表示
 };
 
@@ -43,7 +57,13 @@ const playCry = (url: string) => {
     <div v-if="error">Error: {{ error.message }}</div>
     <ul v-if="!loading && !error" class="pokemon-list">
       <!-- ポケモンのリストを表示 -->
-      <li v-for="pokemon in pokemonList" :key="pokemon.name" class="pokemon-item" @click="updatePokemonDetail(pokemon)">
+      <li
+        v-for="(pokemon, index) in pokemonList"
+        :key="pokemon.name"
+        :style="{ animationDelay: `${index * 0.025}s` }"
+        class="pokemon-item fade-up"
+        @click="updatePokemonDetail(pokemon, $event)"
+      >
         <!-- ポケモンの画像 -->
         <img :src="pokemon.imageUrl" :alt="pokemon.name" class="pokemon-image" />
         <div>
@@ -58,6 +78,14 @@ const playCry = (url: string) => {
         </div>
       </li>
     </ul>
+    <!-- ボールが割れるアニメーション -->
+    <div
+      v-if="showBreakAnimation"
+      class="break-animation"
+      :style="{ top: `${animationPosition?.top}px`, left: `${animationPosition?.left}px` }"
+    >
+      <img src="@/assets/images/ball_break.png" alt="Ball Break Animation" />
+    </div>
     <!-- モーダル表示 -->
     <Modal :show="showModal" @update:show="showModal = $event">
       <div class="modal-content">
@@ -85,6 +113,7 @@ const playCry = (url: string) => {
 
 <style lang="scss" scoped>
 .pokemon-list {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   list-style: none;
@@ -108,6 +137,9 @@ const playCry = (url: string) => {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.1s ease-out forwards;
 
   &::after {
     position: absolute;
@@ -212,6 +244,27 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
 
   li {
     width: 120px;
+  }
+}
+
+/* フェードアップアニメーションの定義 */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ボールが割れるアニメーション */
+.break-animation {
+  position: absolute;
+  width: 300px;
+  z-index: 1000;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: auto;
   }
 }
 </style>
