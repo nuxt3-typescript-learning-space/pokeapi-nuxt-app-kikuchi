@@ -112,14 +112,25 @@ const playCry = (url: string) => {
 </template>
 
 <style lang="scss" scoped>
+h1 {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
+  width: 1200px;
+  padding: 40px;
+  border-bottom: 3px dashed #000;
+}
 .pokemon-list {
   position: relative;
   display: flex;
+  justify-content: space-between;
   flex-wrap: wrap;
   list-style: none;
   padding: 0;
   margin: auto;
   width: 1200px;
+  padding: 40px;
 }
 
 .pokemon-item {
@@ -197,7 +208,13 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
 }
 
 .modal-content {
-  padding: 20px;
+  background-color: #f5f5dc; /* ベージュ背景 */
+  padding: 40px;
+  font-family: 'Courier New', Courier, monospace;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  text-align: left;
 }
 
 .pokemon-cry {
@@ -206,44 +223,37 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
 }
 
 .modal-pokemon-name {
-  font-size: 24px;
-  text-align: center;
+  font-size: 18px;
   font-weight: bold;
-  margin-bottom: 10px;
 }
 
 .modal-pokemon-image {
-  width: 300px;
-  margin: 10px auto 0;
-  border: 1px solid #000;
-  border-radius: 20px;
+  text-align: center;
+  margin-top: 10px;
+  background: #fff;
+  padding: 20px;
+  border: 2px dotted #000;
+
   &__item {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     margin: auto;
   }
 }
 
 .modal-pokemon-description {
-  text-align: left;
   margin-top: 10px;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
+  font-size: 14px;
 }
 
 .pokemon-stats {
   list-style: none;
   padding: 0;
-  text-align: left;
-  margin: 10px auto 0;
-  width: 340px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 14px;
 
   li {
-    width: 120px;
+    margin-bottom: 5px;
   }
 }
 

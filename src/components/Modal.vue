@@ -24,13 +24,13 @@ watch(
 <template>
   <div v-if="isVisible" class="modal-overlay" @click.self="close">
     <div class="modal-content">
-      <button class="modal-close" @click="close">×</button>
+      <button class="modal-close" @click="close" />
       <slot />
     </div>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -45,7 +45,6 @@ watch(
 
 .modal-content {
   background: white;
-  padding: 40px;
   border-radius: 5px;
   position: relative;
   width: 500px;
@@ -54,11 +53,37 @@ watch(
 
 .modal-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  right: 20px;
   background: transparent;
   border: none;
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
+  transform: rotate(45deg);
+  border: 1px solid #000;
+  border-radius: 50%;
+  transition: transform 0.2s ease-out;
+
+  &::before,
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: #000;
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  &:hover {
+    transform: rotate(45deg) scale(1.1);
+  }
 }
 </style>
