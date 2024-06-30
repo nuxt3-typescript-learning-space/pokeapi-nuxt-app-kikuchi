@@ -32,7 +32,6 @@ const updatePokemonDetail = async (pokemon: Pokemon, event: MouseEvent) => {
     top: rect.top - MAGIC_NUBER + window.scrollY,
     left: rect.left - MAGIC_NUBER + window.scrollX,
   };
-  console.log(animationPosition.value);
   showBreakAnimation.value = true; // ボールが割れるアニメーションを表示
   await new Promise((resolve) => setTimeout(resolve, 500)); // 0.5秒待つ
   pokemonDetail.value = pokemon; // ポケモンの詳細データを更新
@@ -99,8 +98,12 @@ const playCry = (url: string) => {
         </div>
         <p class="modal-pokemon-description">{{ pokemonDetail?.description }}</p>
         <ul class="pokemon-stats">
-          <li v-for="stat in pokemonDetail?.stats" :key="stat.name">
-            <span>{{ stat.name }}: {{ stat.base_stat }}</span>
+          <li v-for="stat in pokemonDetail?.stats" :key="stat.name" class="pokemon-stat">
+            <span class="stat-name">{{ stat.name }}</span>
+            <div class="stat-bar-container">
+              <div class="stat-bar" :style="{ width: `${(stat.base_stat / 255) * 100}%` }" />
+              <span class="stat-value">{{ stat.base_stat }}</span>
+            </div>
           </li>
         </ul>
         <div class="pokemon-cry">
@@ -252,8 +255,33 @@ $types: 'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flyin
   margin-top: 10px;
   font-size: 14px;
 
-  li {
+  .pokemon-stat {
+    display: flex;
+    align-items: center;
     margin-bottom: 5px;
+
+    .stat-name {
+      width: 100px;
+    }
+
+    .stat-bar-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      position: relative;
+
+      .stat-bar {
+        height: 10px;
+        background-color: #ffcc00;
+        border: 1px solid #000;
+      }
+
+      .stat-value {
+        position: absolute;
+        right: -30px;
+      }
+    }
   }
 }
 
