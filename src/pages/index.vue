@@ -50,7 +50,7 @@ const playCry = (url: string) => {
 </script>
 
 <template>
-  <div>
+  <div id="pokemon-list">
     <h1>Pokémon List</h1>
     <div v-if="loading">Loading...</div>
     <div v-if="error">Error: {{ error.message }}</div>
@@ -115,12 +115,17 @@ const playCry = (url: string) => {
 </template>
 
 <style lang="scss" scoped>
+#pokemon-list {
+  width: 1200px;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 h1 {
   font-size: 60px;
   font-weight: bold;
   text-align: center;
-  margin: auto;
-  width: 1200px;
+  width: 100%;
   padding: 40px;
   border-bottom: 3px dashed #000;
 }
@@ -132,7 +137,7 @@ h1 {
   list-style: none;
   padding: 0;
   margin: auto;
-  width: 1200px;
+  width: 100%;
   padding: 40px;
 }
 
@@ -142,6 +147,7 @@ h1 {
   text-align: center;
   border: 2px solid #222;
   border-radius: 50%;
+  background: #fff;
   width: 200px;
   height: 200px;
   display: flex;

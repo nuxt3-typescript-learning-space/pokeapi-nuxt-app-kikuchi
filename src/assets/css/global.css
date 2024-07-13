@@ -1,0 +1,6 @@
+body {
+  background-image: url('@/assets/images/background/pokemon_background_01.jpg'); /* 適切な画像パスに置き換えてください */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
